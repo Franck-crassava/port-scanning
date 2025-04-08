@@ -1,54 +1,66 @@
-# 🔍 Port Scanner
+# 🔎 scanning-port
 
-A simple and lightweight Python script that scans a list of common ports on a given IP address. Useful for basic reconnaissance tasks or for learning how socket programming works in Python.
-
----
-
-## 🚀 Features
-
-- Scans multiple predefined ports
-- Quick and easy to use
-- Lightweight and beginner-friendly
-- Customizable and easy to extend
+A lightweight and customizable Python-based port scanner designed for learning, pentesting practice, and automation.  
+Easily specify target IPs, ports, output options, and scan multiple ports in parallel using threads.
 
 ---
 
-## 🛠️ Requirements
+## ⚙️ Features
 
-- Python 3.x  
-No external libraries are required — only the built-in `socket` module is used.
+- 🔧 CLI-based configuration (target IP, ports, thread count)
+- 🧵 Multithreaded scanning for speed
+- 📄 Output results to a file
+- 🎯 Banner grabbing from open ports (optional)
+- 🔒 Simple and clean Python code, beginner-friendly
+- 🚀 Fast and effective for quick reconnaissance
 
 ---
 
-## 📦 Installation
+## 🛠️ Usage
 
 ```bash
-git clone https://github.com/your-username/scanning-port.git
-cd scanning-port
-python port_scanner.py
+python port_scanner.py <target_ip> -p <port1> <port2> ... -o <output_file> -t <threads>
+```
+✅ Example
+```bash
+python port_scanner.py 192.168.1.1 -p 22 80 443 8080 -o scan_results.txt -t 20
+```
+## 📥 Arguments
+Argument	Description	Required	Example
+<target_ip>	IP address of the target	✅	192.168.1.1
+-p	List of ports to scan	✅	-p 22 80 443
+-o	Output file to save results	❌	-o results.txt
+-t	Number of threads (default: 10)	❌	-t 20
+
+## 📌 Notes
+Banner grabbing is attempted on open ports only.
+
+If no output file is specified, results are printed to the console.
+
+The script uses threading to enhance scan speed, especially on larger port lists.
+
+## 🧠 Learn More
+This project is part of a personal portfolio to explore cybersecurity tooling.
+More tools and scripts coming soon!
+
+## 📂 Folder Structure
+```bash
+.
+├── port_scanner.py   # Main script
+├── README.md         # Documentation
+└── results.txt       # Output file (if specified)
 ```
 
-## 🧠 How It Works
-The script uses Python's built-in socket module to attempt TCP connections on a list of ports. If the connection is successful, the port is considered open.
+## 📅 Created: 2025
 
-## 📝 Usage
-bash
-Copier
-Modifier
-$ python port_scanner.py
-Enter IP to scan: 192.168.1.1
-Scanning 192.168.1.1...
+## 💼 Status: Work-in-progress
 
-Port 22 is closed
-Port 80 is open
-Port 443 is open
-Port 3389 is closed
-Port 8080 is closed
-💡 By default, it scans: 22, 80, 443, 3389, 8080
+## 📝 License
+MIT License – Free to use and modify.
 
-🧑‍💻 Author
+## 🧑‍💻 Author
 Franck CRASSAVA – Cybersecurity & Network Architecture Student
 
-⚠️ Disclaimer
+## ⚠️ Disclaimer
 This tool is intended for educational purposes only.
 Do not scan systems you don't own or have explicit permission to test.
