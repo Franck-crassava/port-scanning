@@ -28,10 +28,10 @@ cd scanning-port
 python port_scanner.py
 ```
 
-🧠 How It Works
+## 🧠 How It Works
 The script uses Python's built-in socket module to attempt TCP connections on a list of ports. If the connection is successful, the port is considered open.
 
-📝 Usage
+## 📝 Usage
 bash
 Copier
 Modifier
