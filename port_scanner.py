@@ -1,36 +1,70 @@
 import socket
-import sys
+import argparse
+import threading
+from datetime import datetime
 
-def scan_ports(target_ip, ports):
-    print(f"\n[+] Scanning {target_ip} on ports: {ports}\n")
-    
-    for port in ports:
-        try:
-            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+lock = threading.Lock()
+
+def banner_grab(ip, port):
+    try:
+        with socket.socket() as s:
+            s.settimeout(2)
+            s.connect((ip, port))
+            banner = s.recv(1024).decode().strip()
+            return banner
+    except:
+        return "No banner"
+
+def scan_port(ip, port, output_file=None):
+    try:
+        with socket.socket() as s:
             s.settimeout(1)
-            result = s.connect_ex((target_ip, port))
+            result = s.connect_ex((ip, port))
             if result == 0:
-                print(f"[OPEN] Port {port}")
+                banner = banner_grab(ip, port)
+                msg = f"[OPEN] Port {port} | Banner: {banner}"
             else:
-                print(f"[CLOSED] Port {port}")
-            s.close()
-        except Exception as e:
-            print(f"[ERROR] Could not scan port {port} - {e}")
+                msg = f"[CLOSED] Port {port}"
+
+            with lock:
+                print(msg)
+                if output_file:
+                    with open(output_file, "a") as f:
+                        f.write(msg + "\n")
+
+    except Exception as e:
+        print(f"[ERROR] Port {port}: {e}")
 
 def main():
-    if len(sys.argv) < 3:
-        print("Usage: python port_scanner.py <target_ip> <port1> <port2> ... <portN>")
-        print("Example: python port_scanner.py 192.168.1.1 22 80 443")
-        sys.exit(1)
+    parser = argparse.ArgumentParser(description="Python Port Scanner Tool")
 
-    target_ip = sys.argv[1]
-    try:
-        ports = [int(port) for port in sys.argv[2:]]
-    except ValueError:
-        print("[!] Please provide only valid port numbers (integers).")
-        sys.exit(1)
+    parser.add_argument("ip", help="Target IP address")
+    parser.add_argument("-p", "--ports", nargs="+", type=int, required=True, help="List of ports to scan")
+    parser.add_argument("-o", "--output", help="Output file to save results")
+    parser.add_argument("-t", "--threads", type=int, default=10, help="Number of threads (default: 10)")
 
-    scan_ports(target_ip, ports)
+    args = parser.parse_args()
+
+    print(f"\n🔎 Starting scan on {args.ip}")
+    print(f"📅 Time: {datetime.now()}")
+    print(f"🎯 Ports: {args.ports}")
+    print(f"⚙️ Threads: {args.threads}")
+    print("------------------------------\n")
+
+    threads = []
+    for port in args.ports:
+        t = threading.Thread(target=scan_port, args=(args.ip, port, args.output))
+        t.start()
+        threads.append(t)
+
+        # Limite les threads simultanés
+        while threading.active_count() > args.threads:
+            pass
+
+    for t in threads:
+        t.join()
+
+    print("\n✅ Scan finished.")
 
 if __name__ == "__main__":
     main()
